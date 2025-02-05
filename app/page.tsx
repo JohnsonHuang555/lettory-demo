@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
 
 const countOccurrences = (arr: number[]) => {
   const result: any = {};
@@ -30,8 +31,8 @@ export default function Home() {
 
   useEffect(() => {
     const fetchNewNumbers = async () => {
-      const date = new Date();
-      const res = await fetch(`https://api.taiwanlottery.com/TLCAPIWeB/Lottery/BingoResult?openDate=2025-${date.getMonth()}-${date.getDay()}&pageNum=1&pageSize=${defaultSize}`)
+      const date = format(new Date(), "yyyy-MM-dd");
+      const res = await fetch(`https://api.taiwanlottery.com/TLCAPIWeB/Lottery/BingoResult?openDate=${date}&pageNum=1&pageSize=${defaultSize}`)
       const data = await res.json();
       const newData = data.content.bingoQueryResult.reduce((acc: any, current: any) => {
         acc.push(current.bigShowOrder);
