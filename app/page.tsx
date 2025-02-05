@@ -30,7 +30,8 @@ export default function Home() {
 
   useEffect(() => {
     const fetchNewNumbers = async () => {
-      const res = await fetch(`https://api.taiwanlottery.com/TLCAPIWeB/Lottery/BingoResult?openDate=2025-02-04&pageNum=1&pageSize=${defaultSize}`)
+      const date = new Date();
+      const res = await fetch(`https://api.taiwanlottery.com/TLCAPIWeB/Lottery/BingoResult?openDate=2025-${date.getMonth()}-${date.getDay()}&pageNum=1&pageSize=${defaultSize}`)
       const data = await res.json();
       const newData = data.content.bingoQueryResult.reduce((acc: any, current: any) => {
         acc.push(current.bigShowOrder);
@@ -68,7 +69,7 @@ export default function Home() {
   }
 
   return (
-    <div className="p-12">
+    <div className="p-6 sm:p-12">
       <main className="flex flex-col justify-center items-center">
         {/* <h2 className="mb-4">期數</h2>
         <div className="flex gap-4 mb-8">
@@ -83,7 +84,7 @@ export default function Home() {
             <option value={20}>20</option>
           </select>
         </div>
-        {totalNumberCount ? <div className="w-[1000px] grid grid-cols-8 gap-3">
+        {totalNumberCount ? <div className="w-full grid grid-cols-4 sm:grid-cols-8 gap-3">
           {Array.from({ length: 80 }).map((_, index) => (
             <div key={index} className={`flex-col h-20 border text-xl justify-center items-center flex rounded-md ${getBgColor(totalNumberCount[index + 1] || 0)}`}>
               <div className="text-[26px] mb-1">{index + 1}</div>
