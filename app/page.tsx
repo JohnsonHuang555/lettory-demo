@@ -25,7 +25,8 @@ const countOccurrences = (arr: number[]) => {
 
 export default function Home() {
   const [totalNumberCount, setTotalNumberCount] = useState<any>();
-  const [defaultSize, setDefaultSize] = useState(5)
+  const [defaultSize, setDefaultSize] = useState(3);
+  const [matchPeriodNumbers, setMatchPeriodNumbers] = useState<number[]>()
 
   // const topThree = getTopThree(totalNumberCount);
 
@@ -40,7 +41,21 @@ export default function Home() {
       }, []).flat();
 
       const occurrences = countOccurrences(newData.map((a: any) => Number(a)));
-      setTotalNumberCount(occurrences)
+      setTotalNumberCount(occurrences);
+
+      const sliceNumbers = data.content.bingoQueryResult.slice(0, defaultSize).reduce((acc: any, current: any) => {
+        acc.push(current.bigShowOrder);
+        return acc;
+      }, []).flat();
+
+      const sliceOccurrences = countOccurrences(sliceNumbers.map((a: any) => Number(a)));
+      const matchNumbers = Object.entries(sliceOccurrences).map(([key, value]) => {
+        return {
+          number: Number(key),
+          count: Number(value),
+        }
+      }).filter(a => a.count === defaultSize).map(c => c.number);
+      setMatchPeriodNumbers(matchNumbers);
     }
 
     fetchNewNumbers();
@@ -64,8 +79,12 @@ export default function Home() {
         return 'bg-red-600 text-white';
       case 7:
         return 'bg-red-700 text-white';
-      default:
+      case 8:
+        return 'bg-red-800 text-white';
+      case 9:
         return 'bg-red-900 text-white';
+      default:
+        return 'bg-red-950 text-white';
     }
   }
 
@@ -76,7 +95,7 @@ export default function Home() {
         <div className="flex gap-4 mb-8">
           {topThree?.map(t => (<div key={t} className="text-lg border rounded-md px-4 py-2 flex items-center justify-center">{t}</div>))}
         </div> */}
-        <div className="flex mb-8">
+        <div className="flex mb-4">
           <div>期數</div>
           <select className="ml-2 w-[100px] border" defaultValue={defaultSize} onChange={(e) => setDefaultSize(Number(e.target.value))}>
             <option value={3}>3</option>
@@ -85,6 +104,13 @@ export default function Home() {
             <option value={20}>20</option>
           </select>
         </div>
+        <div className="mb-4 flex flex-col">
+          <div className="mb-2">- 連續 {defaultSize} 期都開出號碼 -</div>
+          {matchPeriodNumbers?.length ? <div className="flex justify-center gap-2">
+            {matchPeriodNumbers.map(n => (<div className="text-[20px] text-red-500 font-semibold border-2 w-10 h-10 rounded-full flex justify-center items-center" key={n}>{n}</div>))}
+          </div>: <div className="text-center font-semibold text-[20px]">無</div>}
+        </div>
+        <hr />
         {totalNumberCount ? <div className="w-full grid grid-cols-4 sm:grid-cols-8 gap-3">
           {Array.from({ length: 80 }).map((_, index) => (
             <div key={index} className={`flex-col h-20 border text-xl justify-center items-center flex rounded-md ${getBgColor(totalNumberCount[index + 1] || 0)}`}>
